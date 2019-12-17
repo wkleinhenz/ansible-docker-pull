@@ -1,0 +1,39 @@
+---
+# tasks file for ansible-docker-pull
+- name: Archive images
+  docker_image:
+    name: "{{ item }}"
+    tag: v1
+    archive_path: "{{archive_dir}}/{{ item.split(':')[0] }}.tar"
+    source: pull
+  with_items:
+    - "{{ image_list }}"
+
+
+
+- name: delete file
+  
+  file:
+    state: absent
+    path: "{{archive_dir}}/manifest.yml"
+
+- name: create file
+  file:
+    state: touch
+    path: "{{archive_dir}}/manifest.yml"
+
+- name: fill manifest
+  lineinfile:
+    path: "{{archive_dir}}/manifest.yml"
+    state: present
+    line: 'image_list: "{{ image_list }}"'
+
+- name: archive all
+  archive:
+    path:
+      - "{{archive_dir}}/{{ item.split(':')[0] }}.tar"
+      - "{{archive_dir}}/manifest.yml"
+    dest: "{{archive_dir}}/docker-images.tar.gz"
+    format: gz
+  with_items:
+    - "{{ image_list }}"

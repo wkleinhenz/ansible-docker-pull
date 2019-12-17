@@ -1,0 +1,7 @@
+---
+# defaults file for ansible-docker-pull
+archive_dir: '/opt'
+image_list: 
+  - ubuntu:latest
+  - centos:latest
+ 
